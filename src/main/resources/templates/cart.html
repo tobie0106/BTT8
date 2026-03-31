@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>Giỏ hàng</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 30px;
+            background-color: #f4f6f9;
+        }
+
+        h2 {
+            color: #1f2d3d;
+            text-align: center;
+        }
+
+        .container {
+            width: 90%;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 8px rgba(0,0,0,0.1);
+        }
+
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .btn-back,
+        .btn-checkout {
+            display: inline-block;
+            padding: 10px 16px;
+            background-color: #0d6efd;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-bottom: 15px;
+        }
+
+        .btn-back:hover,
+        .btn-checkout:hover {
+            background-color: #0b5ed7;
+        }
+
+        .message {
+            padding: 10px;
+            background: #d1e7dd;
+            border: 1px solid #badbcc;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            color: #0f5132;
+        }
+
+        .error {
+            padding: 10px;
+            background: #f8d7da;
+            border: 1px solid #f5c2c7;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            color: #842029;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: center;
+        }
+
+        th {
+            background-color: #343a40;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+
+        .text-right {
+            text-align: right;
+        }
+
+        .summary {
+            margin-top: 20px;
+            text-align: right;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2>GIỎ HÀNG</h2>
+
+    <div class="top-bar">
+        <a class="btn-back" th:href="@{/books}">Quay về danh sách sách</a>
+        <form th:action="@{/checkout}" method="post" th:if="${cartItems.size() > 0}">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+            <button class="btn-checkout" type="submit">Thanh toán</button>
+        </form>
+    </div>
+
+    <div class="message" th:if="${message}" th:text="${message}"></div>
+    <div class="error" th:if="${error}" th:text="${error}"></div>
+
+    <table>
+        <thead>
+        <tr>
+            <th>Tên sách</th>
+            <th>Giá</th>
+            <th>Số lượng</th>
+            <th>Tổng</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="item : ${cartItems}">
+            <td th:text="${item.book.title}"></td>
+            <td th:text="${item.book.price}"></td>
+            <td th:text="${item.quantity}"></td>
+            <td th:text="${item.totalPrice}"></td>
+        </tr>
+        <tr th:if="${#lists.isEmpty(cartItems)}">
+            <td colspan="4">Giỏ hàng trống</td>
+        </tr>
+        </tbody>
+    </table>
+
+    <div class="summary" th:if="${cartItems.size() > 0}">
+        Tổng tiền: <span th:text="${cartTotal}"></span> VNĐ
+    </div>
+</div>
+</body>
+</html>

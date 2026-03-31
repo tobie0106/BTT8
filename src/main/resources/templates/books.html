@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="vi"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>Quản lý sách</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 30px;
+            background-color: #f4f6f9;
+        }
+
+        h2 {
+            color: #1f2d3d;
+            text-align: center;
+        }
+
+        .container {
+            width: 90%;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 8px rgba(0,0,0,0.1);
+        }
+
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .user-info {
+            font-weight: bold;
+            color: #1f2d3d;
+        }
+
+        .btn-add {
+            display: inline-block;
+            padding: 10px 16px;
+            background-color: #0d6efd;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-bottom: 15px;
+        }
+
+        .btn-add:hover {
+            background-color: #0b5ed7;
+        }
+
+        .logout-form {
+            display: inline;
+        }
+
+        .message {
+            padding: 10px;
+            background: #d1e7dd;
+            border: 1px solid #badbcc;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            color: #0f5132;
+        }
+
+        .error {
+            padding: 10px;
+            background: #f8d7da;
+            border: 1px solid #f5c2c7;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            color: #842029;
+        }
+
+        .search-form input,
+        .search-form select {
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-right: 8px;
+        }
+
+        .search-form .btn-search {
+            padding: 10px 16px;
+            background-color: #0d6efd;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .search-form .btn-search:hover {
+            background-color: #0b5ed7;
+        }
+
+        .btn-logout {
+            padding: 10px 16px;
+            background-color: #198754;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .btn-logout:hover {
+            background-color: #157347;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 20px;
+        }
+
+        .pagination a {
+            padding: 8px 12px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            color: #0d6efd;
+            text-decoration: none;
+        }
+
+        .pagination a.active,
+        .pagination a:hover {
+            background-color: #0d6efd;
+            color: white;
+            border-color: #0d6efd;
+        }
+
+        .pagination a.disabled {
+            pointer-events: none;
+            opacity: 0.6;
+            background-color: #e9ecef;
+            color: #6c757d;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: center;
+        }
+
+        th {
+            background-color: #343a40;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+
+        .btn-edit {
+            padding: 6px 12px;
+            background-color: #6c757d;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+        }
+
+        .btn-delete {
+            padding: 6px 12px;
+            background-color: #dc3545;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+        }
+
+        .btn-edit:hover {
+            background-color: #5c636a;
+        }
+
+        .btn-delete:hover {
+            background-color: #bb2d3b;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2>QUẢN LÝ SÁCH</h2>
+
+    <div class="top-bar">
+        <div class="user-info">
+            Xin chào, <span sec:authentication="name"></span>
+        </div>
+
+        <form class="search-form" th:action="@{/books}" method="get">
+            <input type="text" name="keyword" placeholder="Tìm theo tên..." th:value="${keyword}">
+            <select name="category">
+                <option value="" th:selected="${selectedCategory == ''}">Tất cả danh mục</option>
+                <option th:each="cat : ${categories}" th:value="${cat}" th:text="${cat}" th:selected="${cat == selectedCategory}"></option>
+            </select>
+            <select name="sort">
+                <option value="priceAsc" th:selected="${sort == 'priceAsc'}">Giá tăng dần</option>
+                <option value="priceDesc" th:selected="${sort == 'priceDesc'}">Giá giảm dần</option>
+            </select>
+            <button type="submit" class="btn-search">Lọc</button>
+        </form>
+
+        <div class="user-actions">
+            <a class="btn-add" th:href="@{/books/new}" sec:authorize="hasRole('ADMIN')">Thêm sách mới</a>
+            <a class="btn-add" th:href="@{/cart}">Giỏ hàng (<span th:text="${cartSize}">0</span>)</a>
+            <form class="logout-form" th:action="@{/logout}" method="post">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                <button class="btn-logout" type="submit">Đăng xuất</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="message" th:if="${message}" th:text="${message}"></div>
+    <div class="error" th:if="${error}" th:text="${error}"></div>
+
+    <table>
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Tên sách</th>
+            <th>Tác giả</th>
+            <th>Giá</th>
+            <th>Nhà xuất bản</th>
+            <th>Danh mục</th>
+            <th>Số lượng</th>
+            <th>Hành động</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="book : ${listBooks}">
+            <td th:text="${book.id}"></td>
+            <td th:text="${book.title}"></td>
+            <td th:text="${book.author}"></td>
+            <td th:text="${book.price}"></td>
+            <td th:text="${book.publisher}"></td>
+            <td th:text="${book.category}"></td>
+            <td th:text="${book.quantity}"></td>
+            <td>
+                <form th:action="@{/cart/add}" method="post" style="display:inline-block; margin-right:6px;">
+                    <input type="hidden" name="bookId" th:value="${book.id}">
+                    <input type="number" name="quantity" value="1" min="1" style="width:60px; padding:4px; margin-right:4px;">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                    <button type="submit" class="btn-edit">Thêm vào giỏ</button>
+                </form>
+                <a class="btn-edit"
+                   th:href="@{'/books/edit/' + ${book.id}}"
+                   sec:authorize="hasRole('ADMIN')">Sửa</a>
+
+                <a class="btn-delete"
+                   th:href="@{'/books/delete/' + ${book.id}}"
+                   sec:authorize="hasRole('ADMIN')"
+                   onclick="return confirm('Bạn có chắc muốn xóa sách này không?')">Xóa</a>
+            </td>
+        </tr>
+
+        <tr th:if="${#lists.isEmpty(listBooks)}">
+            <td colspan="8">Chưa có dữ liệu sách</td>
+        </tr>
+        </tbody>
+    </table>
+
+    <div class="pagination" th:if="${totalPages > 1}">
+        <a th:href="@{/books(page=${currentPage - 1}, keyword=${keyword}, category=${selectedCategory}, sort=${sort})}"
+           th:classappend="${currentPage == 1} ? ' disabled' : ''">Previous</a>
+        <a th:each="pageNum : ${#numbers.sequence(1, totalPages)}"
+           th:href="@{/books(page=${pageNum}, keyword=${keyword}, category=${selectedCategory}, sort=${sort})}"
+           th:text="${pageNum}"
+           th:classappend="${pageNum == currentPage} ? ' active' : ''"></a>
+        <a th:href="@{/books(page=${currentPage + 1}, keyword=${keyword}, category=${selectedCategory}, sort=${sort})}"
+           th:classappend="${currentPage == totalPages} ? ' disabled' : ''">Next</a>
+    </div>
+</div>
+</body>
+</html>
