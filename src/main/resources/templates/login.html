@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Đăng nhập</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f6f9;
+            margin: 0;
+            padding: 0;
+        }
+
+        .login-container {
+            width: 400px;
+            margin: 80px auto;
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 0 8px rgba(0,0,0,0.1);
+        }
+
+        h2 {
+            text-align: center;
+            color: #1f2d3d;
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-top: 12px;
+            margin-bottom: 6px;
+            font-weight: bold;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            box-sizing: border-box;
+        }
+
+        button {
+            width: 100%;
+            margin-top: 20px;
+            padding: 10px;
+            border: none;
+            border-radius: 6px;
+            background-color: #0d6efd;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0b5ed7;
+        }
+
+        .message {
+            margin-top: 15px;
+            text-align: center;
+            color: red;
+        }
+
+        .success {
+            color: green;
+        }
+
+        .account-box {
+            margin-top: 20px;
+            background: #f8f9fa;
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+<div class="login-container">
+    <h2>Đăng nhập hệ thống</h2>
+
+    <form th:action="@{/do-login}" method="post">
+        <label for="username">Tên đăng nhập</label>
+        <input type="text" id="username" name="username" required>
+
+        <label for="password">Mật khẩu</label>
+        <input type="password" id="password" name="password" required>
+
+        <button type="submit">Đăng nhập</button>
+    </form>
+
+    <div class="message" th:if="${param.error}">
+        Sai tên đăng nhập hoặc mật khẩu
+    </div>
+
+    <div class="message success" th:if="${param.logout}">
+        Bạn đã đăng xuất thành công
+    </div>
+
+    <div class="account-box">
+        <div><b>Tài khoản ADMIN:</b> admin / 123456</div>
+        <div><b>Tài khoản USER:</b> user / 123456</div>
+    </div>
+</div>
+</body>
+</html>
